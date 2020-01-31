@@ -89,9 +89,13 @@ workflows:
       branches:
         ignore:
           - gh-pages
+    jobs:
+      - build
   deploy:
     requires:
       - build
     filters:
       branches:
         only: master
+    jobs:
+      - deploy
