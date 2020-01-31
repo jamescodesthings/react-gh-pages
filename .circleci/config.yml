@@ -15,8 +15,8 @@ commands:
     description: "NPM Global Install"
     steps:
       - run:
-          name: "npm install -g << parameters.packages >>"
-          command: npm install -g << parameters.packages>>
+          name: "[sudo] npm install -g << parameters.packages >>"
+          command: sudo npm install -g << parameters.packages>>
   npmr:
     parameters:
       command:
@@ -62,8 +62,7 @@ jobs:
     executor: node
     steps:
       - checkout
-      - npmg:
-          packages: "npm"
+      - npmg
       - npmi
       - npmr:
           command: "build"
@@ -78,8 +77,8 @@ jobs:
     steps:
       - checkout
       - attach_build_from_workspace
-      - npmg:
-          packages: "npm gh-pages"
+      - npmg
+      - npmi
       - npmr:
           command: "deploy"
 
