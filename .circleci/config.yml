@@ -15,8 +15,8 @@ commands:
     description: "NPM Global Install"
     steps:
       - run:
-          name: "[sudo] npm install -g << parameters.packages >>"
-          command: sudo npm install -g << parameters.packages>>
+          name: "npm install -g << parameters.packages >>"
+          command: npm install -g << parameters.packages>>
   npmr:
     parameters:
       command:
