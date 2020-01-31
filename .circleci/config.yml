@@ -7,6 +7,15 @@ executors:
     working_directory: ~/project
 
 commands:
+  gitconf:
+    description: "Sets up git config for circle"
+    steps:
+      - run:
+          name: "Configure GIT"
+          command: |
+            git config --global user.email "$GIT_AUTHOR_EMAIL"
+            git config --global user.name "$GIT_AUTHOR_NAME"
+
   npmg:
     parameters:
       packages:
@@ -76,6 +85,7 @@ jobs:
     executor: node
     steps:
       - checkout
+      - gitconf
       - attach_build_from_workspace
       - npmg
       - npmi
