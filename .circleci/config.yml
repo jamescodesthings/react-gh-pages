@@ -7,6 +7,13 @@ executors:
     working_directory: ~/project
 
 commands:
+  add_key:
+    description: "Add Deploy Key"
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "74:58:84:a0:dc:ca:d2:36:73:4a:e5:f2:66:49:b4:9a"
+
   gitconf:
     description: "Sets up git config for circle"
     steps:
@@ -84,6 +91,7 @@ jobs:
   deploy:
     executor: node
     steps:
+      - add_key
       - checkout
       - gitconf
       - attach_build_from_workspace
