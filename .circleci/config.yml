@@ -1,0 +1,97 @@
+version: 2.1
+
+executors:
+  node:
+    docker:
+      - image: circleci/node:13.7
+    working_directory: ~/project
+
+commands:
+  npmg:
+    parameters:
+      packages:
+        type: string
+        default: "npm"
+    description: "NPM Global Install"
+    steps:
+      - run:
+          name: "[sudo] npm install -g << parameters.packages >>"
+          command: sudo npm install -g << parameters.packages>>
+  npmr:
+    parameters:
+      command:
+        type: string
+        default: "build"
+    description: "NPM run"
+    steps:
+      - run:
+          name: "npm run << parameters.command >>"
+          command: npm run << parameters.command >>
+  npmi:
+    description: "NPM Install"
+    steps:
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}-{{ .Environment.CACHE_KEY }}
+      - run:
+          name: "npm i if no cache"
+          command: |
+            if [ -d "node_modules" ]; then
+              echo "Skipping, restored from cache"
+            else
+              echo "Installing"
+              npm ci
+            fi
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}-{{ .Environment.CACHE_KEY }}
+          paths:
+            - ./node_modules
+  save_build_to_workspace:
+    description: "Persist build directory"
+    steps:
+      - persist_to_workspace:
+          root: ~/project
+          paths: build/*
+  attach_build_from_workspace:
+    description: "Attach build directory"
+    steps:
+      - attach_workspace:
+          at: ~/project
+
+jobs:
+  build:
+    executor: node
+    steps:
+      - checkout
+      - npmg:
+          packages: "npm"
+      - npmi
+      - npmr:
+          command: "build"
+      - npmr:
+          command: "test-ci"
+      - save_build_to_workspace
+      - store_artifacts:
+          path: ./build
+          destination: build
+  deploy:
+    executor: node
+    steps:
+      - checkout
+      - attach_build_from_workspace
+      - npmg:
+          packages: "npm gh-pages"
+      - npmr:
+          command: "deploy"
+
+workflows:
+  build:
+    filters:
+      branches:
+        ignore:
+          - gh-pages
+  deploy:
+    requires:
+      - build
+    filters:
+      branches:
+        only: master
