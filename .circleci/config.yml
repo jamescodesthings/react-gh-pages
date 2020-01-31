@@ -84,18 +84,16 @@ jobs:
           command: "deploy"
 
 workflows:
-  build:
-    filters:
-      branches:
-        ignore:
-          - gh-pages
+  build_and_deploy:
     jobs:
-      - build
-  deploy:
-    requires:
-      - build
-    filters:
-      branches:
-        only: master
-    jobs:
-      - deploy
+      - build:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
