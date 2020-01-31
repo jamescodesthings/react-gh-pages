@@ -13,9 +13,8 @@ commands:
       - run:
           name: "Configure GIT"
           command: |
-            git config --global -l
-            git config --global user.email "$GIT_AUTHOR_EMAIL"
-            git config --global user.name "$GIT_AUTHOR_NAME"
+            git config user.email "ci-build@codesthings.com"
+            git config user.name "Circle CI"
 
   npmg:
     parameters:
