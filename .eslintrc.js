@@ -7,31 +7,32 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 6,
-    sourceType: "module",
+    sourceType: 'module',
     ecmaFeatures: {
-      jsx: true
-    }
+      jsx: true,
+    },
   },
   env: {
-    commonjs: true,
+    browser: true,
     es6: true,
-    node: true
+    jest: true,
+    node: true,
   },
   settings: {
     react: {
-      createClass: "createReactClass",
-      version: "detect",
+      createClass: 'createReactClass',
+      version: 'detect',
     },
     propWrapperFunctions: [
       // The names of any function used to wrap propTypes, e.g. `forbidExtraProps`. If this isn't set, any propTypes wrapped in a function will be skipped.
-      "forbidExtraProps",
-      {property: "freeze", "object": "Object"},
-      {property: "myFavoriteWrapper"}
+      'forbidExtraProps',
+      { property: 'freeze', object: 'Object' },
+      { property: 'myFavoriteWrapper' },
     ],
-      linkComponents: [
+    linkComponents: [
       // Components used as alternatives to <a> for linking, eg. <Link to={ url } />
-      "Hyperlink",
-      {name: "Link", linkAttribute: "to"}
-    ]
+      'Hyperlink',
+      { name: 'Link', linkAttribute: 'to' },
+    ],
   },
 };
