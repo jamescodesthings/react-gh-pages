@@ -82,6 +82,8 @@ jobs:
       - npmg
       - npmi
       - npmr:
+          command: "lint"
+      - npmr:
           command: "build"
       - npmr:
           command: "test-ci"
