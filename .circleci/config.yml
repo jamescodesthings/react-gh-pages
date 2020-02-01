@@ -78,7 +78,7 @@ commands:
       - run:
           name: "Copy Circle conf to Build"
           command: |
-            cp .circleci build/.circleci
+            cp -r .circleci build/.circleci
 jobs:
   build:
     executor: node
