@@ -79,6 +79,7 @@ commands:
           name: "Copy Circle conf to Build"
           command: |
             cp -r .circleci build/.circleci
+            echo "codesthings.com" > build/CNAME
 jobs:
   build:
     executor: node
