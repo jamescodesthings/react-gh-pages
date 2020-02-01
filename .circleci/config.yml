@@ -72,7 +72,13 @@ commands:
     steps:
       - attach_workspace:
           at: ~/project
-
+  copy_circle_conf_to_build:
+    description: "Copies the circle config to build dir"
+    steps:
+      - run:
+          name: "Copy Circle conf to Build"
+          command: |
+            cp .circleci build/.circleci
 jobs:
   build:
     executor: node
@@ -84,9 +90,10 @@ jobs:
       - npmr:
           command: "lint"
       - npmr:
-          command: "build"
-      - npmr:
           command: "test-ci"
+      - npmr:
+          command: "build"
+      - copy_circle_conf_to_build
       - save_build_to_workspace
       - store_artifacts:
           path: ./build
