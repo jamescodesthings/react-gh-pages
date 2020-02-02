@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== 'production') {
   })();
 } else {
   (async () => {
-    const ServiceWorker = await import('service-worker');
+    const ServiceWorker = await import('./service-worker');
     ServiceWorker.register();
   })();
 }
