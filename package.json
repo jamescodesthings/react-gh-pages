@@ -8,6 +8,7 @@
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
     "react": "^16.12.0",
+    "react-axe": "^3.3.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.1"
   },
@@ -43,6 +44,7 @@
     "gh-pages": "^2.2.0",
     "husky": "^4.2.1",
     "lint-staged": "^10.0.7",
+    "node-sass": "^4.13.1",
     "prettier": "^1.19.1",
     "pretty-quick": "^2.0.1"
   }
