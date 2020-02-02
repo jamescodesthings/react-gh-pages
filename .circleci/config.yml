@@ -1,0 +1,127 @@
+version: 2.1
+
+executors:
+  node:
+    docker:
+      - image: circleci/node:13.7
+    working_directory: ~/project
+
+commands:
+  add_key:
+    description: "Add Deploy Key"
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "74:58:84:a0:dc:ca:d2:36:73:4a:e5:f2:66:49:b4:9a"
+
+  gitconf:
+    description: "Sets up git config for circle"
+    steps:
+      - run:
+          name: "Configure GIT"
+          command: |
+            git config user.email "ci-build@codesthings.com"
+            git config user.name "Circle CI"
+
+  npmg:
+    parameters:
+      packages:
+        type: string
+        default: "npm"
+    description: "NPM Global Install"
+    steps:
+      - run:
+          name: "[sudo] npm install -g << parameters.packages >>"
+          command: sudo npm install -g << parameters.packages>>
+  npmr:
+    parameters:
+      command:
+        type: string
+        default: "build"
+    description: "NPM run"
+    steps:
+      - run:
+          name: "npm run << parameters.command >>"
+          command: npm run << parameters.command >>
+  npmi:
+    description: "NPM Install"
+    steps:
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}-{{ .Environment.CACHE_KEY }}
+      - run:
+          name: "npm i if no cache"
+          command: |
+            if [ -d "node_modules" ]; then
+              echo "Skipping, restored from cache"
+            else
+              echo "Installing"
+              npm ci
+            fi
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}-{{ .Environment.CACHE_KEY }}
+          paths:
+            - ./node_modules
+  save_build_to_workspace:
+    description: "Persist build directory"
+    steps:
+      - persist_to_workspace:
+          root: ~/project
+          paths: build/*
+  attach_build_from_workspace:
+    description: "Attach build directory"
+    steps:
+      - attach_workspace:
+          at: ~/project
+  copy_circle_conf_to_build:
+    description: "Copies the circle config to build dir"
+    steps:
+      - run:
+          name: "Copy Circle conf to Build"
+          command: |
+            cp -r .circleci build/.circleci
+            echo "codesthings.com" > build/CNAME
+jobs:
+  build:
+    executor: node
+    steps:
+      - add_key
+      - checkout
+      - npmg
+      - npmi
+      - npmr:
+          command: "lint"
+      - npmr:
+          command: "test-ci"
+      - npmr:
+          command: "build"
+      - copy_circle_conf_to_build
+      - save_build_to_workspace
+      - store_artifacts:
+          path: ./build
+          destination: build
+  deploy:
+    executor: node
+    steps:
+      - add_key
+      - checkout
+      - gitconf
+      - attach_build_from_workspace
+      - npmg
+      - npmi
+      - npmr:
+          command: "deploy"
+
+workflows:
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
