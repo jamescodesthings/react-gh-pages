@@ -10,4 +10,9 @@ if (process.env.NODE_ENV !== 'production') {
     const axe = await import('react-axe');
     axe.default(React, ReactDOM, 1000);
   })();
+} else {
+  (async () => {
+    const ServiceWorker = await import('service-worker');
+    ServiceWorker.register();
+  })();
 }
